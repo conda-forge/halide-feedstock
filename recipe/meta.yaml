@@ -30,7 +30,6 @@ requirements:
 test:
   requires:
     - toolchain
-    - zlib 1.2.*
 
 about:
   home: http://halide-lang.org
