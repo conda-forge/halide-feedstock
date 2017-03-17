@@ -23,14 +23,13 @@ requirements:
     - toolchain
     - clangdev
     - llvmdev
-    - zlib
+    - zlib 1.2.*
   run:
-    - zlib
+    - zlib 1.2.*
 
 test:
   requires:
     - toolchain
-    - zlib
 
 about:
   home: http://halide-lang.org
