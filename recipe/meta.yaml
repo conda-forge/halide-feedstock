@@ -1,7 +1,7 @@
 {% set name = "halide" %}
 {% set version = "2016.10.25" %}
 {% set sha256 = "2d4beac52b8c710e3001b61679eabe6d49bc5bf17abf9b284dbce81d8f5b762b" %}
-{% set build = 0 %}
+{% set build = 1 %}
 
 package:
   name: {{ name }}
