@@ -1,0 +1,32 @@
+--- a/python_bindings/Makefile
++++ b/python_bindings/Makefile
+@@ -4,21 +4,23 @@
+ ROOT_DIR = $(strip $(shell dirname $(THIS_MAKEFILE)))
+ HALIDE_DIR ?= ..
+ 
++PYTHON_MAJOR=$(shell python --version 2>&1 | cut -d' ' -f2 | cut -b1)
++PYTHON_CONFIG=python$(PYTHON_MAJOR)-config
++
+ ifeq ($(UNAME), Linux)
+ # Disable some warnings that are pervasive in Boost
+-CCFLAGS=$(shell python3-config --cflags) -I $(HALIDE_DIR)/include -std=c++11 -fPIC -Wno-unused-local-typedef -Wno-shorten-64-to-32
+-PYTHON_VER=$(shell python3 --version | cut -d' ' -f2 | cut -b1,3)
+-LDFLAGS=$(shell python3-config --ldflags) -lboost_python-py$(PYTHON_VER) -lz
++CCFLAGS=$(shell $(PYTHON_CONFIG) --cflags) -I $(HALIDE_DIR)/include -std=c++11 -fPIC -Wno-unused-local-typedef -Wno-shorten-64-to-32
++LDFLAGS=$(shell $(PYTHON_CONFIG) --ldflags) -lboost_python$(PYTHON_MAJOR) -Wl,--no-as-needed -lz
+ endif
+ 
+ ifeq ($(UNAME), Darwin)
+ # The /opt includes are in case this is a macports install of python and boost python
+ # Disable some warnings that are pervasive in Boost
+-CCFLAGS=$(shell python-config --cflags) -I $(HALIDE_DIR)/include -I /opt/local/include -std=c++11 -Wno-unused-local-typedef -Wno-shorten-64-to-32
+-LDFLAGS=$(shell python-config --ldflags) -L /opt/local/lib -lboost_python3-mt -lz
++CCFLAGS=$(shell $(PYTHON_CONFIG) --cflags) -I $(HALIDE_DIR)/include -I /opt/local/include -std=c++11 -Wno-unused-local-typedef -Wno-shorten-64-to-32
++LDFLAGS=$(shell $(PYTHON_CONFIG) --ldflags) -L /opt/local/lib -lboost_python$(PYTHON_MAJOR) -Wl,--no-as-needed -lz
+ endif
+ 
+-NUMPY_PATH=$(shell python3 -c "import numpy; print(numpy.__path__[0] + '/core/include')")
++NUMPY_PATH=$(shell python -c "import numpy; print(numpy.__path__[0] + '/core/include')")
+ 
+ PY_SRCS=$(shell ls $(ROOT_DIR)/python/*.cpp)
+ PY_OBJS=$(PY_SRCS:$(ROOT_DIR)/python/%.cpp=build/py_%.o)

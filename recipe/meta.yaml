@@ -1,7 +1,7 @@
 {% set name = "halide" %}
-{% set version = "2016.10.25" %}
-{% set sha256 = "2d4beac52b8c710e3001b61679eabe6d49bc5bf17abf9b284dbce81d8f5b762b" %}
-{% set build = 1 %}
+{% set version = "2017.05.03" %}
+{% set sha256 = "22db6c51ad19d5621ebbada18ab2c6f4da30d6f71c3904aefc302ddadada48f9" %}
+{% set build = 0 %}
 
 package:
   name: {{ name }}
@@ -13,6 +13,7 @@ source:
   sha256: {{ sha256 }}
   patches:
     - ldflags.patch
+    - python_bindings_makefile.patch
 
 build:
   number: {{ build }}
@@ -20,16 +21,22 @@ build:
 
 requirements:
   build:
+    - python
     - toolchain
     - clangdev
     - llvmdev
+    - boost
     - zlib 1.2.*
   run:
+    - python
+    - boost
     - zlib 1.2.*
 
 test:
   requires:
     - toolchain
+  imports:
+    - halide
 
 about:
   home: http://halide-lang.org
