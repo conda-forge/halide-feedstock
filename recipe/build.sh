@@ -9,6 +9,14 @@ fi
 make -j${NUM_CPUS}
 make install PREFIX=$PREFIX
 
+(
+    cd python_bindings
+    make -j${NUM_CPUS}
+    cp build/halide.so ${SP_DIR}
+    mkdir -p $PREFIX/share/halide/tutorial/python
+    cp tutorial/*.py $PREFIX/share/halide/tutorial/python
+)
+
 if [[ $(uname) == "Darwin" ]]; then
     # set the dll id on macOS
     LIBHALIDE="$PREFIX/lib/libHalide.so"
