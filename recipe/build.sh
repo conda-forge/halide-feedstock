@@ -8,9 +8,3 @@ fi
 
 make -j${NUM_CPUS}
 make install PREFIX=$PREFIX
-
-if [[ $(uname) == "Darwin" ]]; then
-    # set the dll id on macOS
-    LIBHALIDE="$PREFIX/lib/libHalide.so"
-    install_name_tool -id $LIBHALIDE $LIBHALIDE
-fi
