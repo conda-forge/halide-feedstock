@@ -20,16 +20,19 @@ build:
 
 requirements:
   build:
-    - toolchain
+    - compiler('c')
+    - compiler('cxx')
     - clangdev
     - llvmdev
-    - zlib 1.2.*
+  host:
+    - zlib
   run:
-    - zlib 1.2.*
+    - zlib
 
 test:
   requires:
-    - toolchain
+    - compiler('c')
+    - compiler('cxx')
 
 about:
   home: http://halide-lang.org
