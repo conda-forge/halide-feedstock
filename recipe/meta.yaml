@@ -26,8 +26,10 @@ requirements:
   host:
     - clangdev
     - llvmdev
+    - libxml2
     - zlib
   run:
+    - libxml2
     - zlib
 
 test:
