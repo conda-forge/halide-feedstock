@@ -1,6 +1,6 @@
 if [[ $(uname) == "Darwin" ]]; then
-    # don't use clang++ from the env
-    export CXX=c++
+    # ensure we test with host compiler on darwin
+    export CXX=/usr/bin/c++
 fi
 
 ${CXX:-c++} -std=c++11 -I$PREFIX/include $RECIPE_DIR/test.cpp \

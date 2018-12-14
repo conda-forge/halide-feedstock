@@ -21,18 +21,16 @@ build:
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx')}}
+    - {{ compiler('cxx') }}
+  host:
     - clangdev
     - llvmdev
-  host:
     - zlib
   run:
     - zlib
 
 test:
   requires:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
 
 about:
