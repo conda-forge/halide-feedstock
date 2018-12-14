@@ -4,6 +4,9 @@ if [[ $(uname) == "Darwin" && "$cxx_compiler" == "toolchain_cxx" ]]; then
     export CC=/usr/bin/cc
 fi
 
+# avoid linking to libLLVM in build prefix
+rm -vf "$BUILD_PREFIX"/lib/libLLVM*.a
+
 export LLVM_CONFIG=$PREFIX/bin/llvm-config
 export CLANG=$PREFIX/bin/clang
 
