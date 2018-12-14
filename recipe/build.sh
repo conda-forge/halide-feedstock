@@ -10,5 +10,5 @@ export CLANG=$PREFIX/bin/clang
 # need to look in $PREFIX for zlib
 export LDFLAGS="-L$PREFIX/lib $LDFLAGS"
 
-make -j${NUM_CPUS}
+make -j${CPU_COUNT}
 make install PREFIX=$PREFIX
