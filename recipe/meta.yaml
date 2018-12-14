@@ -13,6 +13,7 @@ source:
   sha256: {{ sha256 }}
   patches:
     - ldflags.patch
+    - pr-2915.patch
 
 build:
   number: {{ build }}

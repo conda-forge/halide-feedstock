@@ -1,0 +1,172 @@
+From d596053a81c2635123fc0b93fbf3d1402c29608b Mon Sep 17 00:00:00 2001
+From: Andrew Adams <andrew.b.adams@gmail.com>
+Date: Mon, 23 Apr 2018 14:22:59 -0700
+Subject: [PATCH 1/5] Remove use of problematic atomics from cuda acquire
+ context
+
+---
+ src/runtime/cuda.cpp | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/src/runtime/cuda.cpp b/src/runtime/cuda.cpp
+index 3bd1b4f8ed4..db0aa648eac 100644
+--- a/src/runtime/cuda.cpp
++++ b/src/runtime/cuda.cpp
+@@ -104,9 +104,7 @@ WEAK int halide_cuda_acquire_context(void *user_context, CUcontext *ctx, bool cr
+     // If the context has not been initialized, initialize it now.
+     halide_assert(user_context, &context != NULL);
+ 
+-    CUcontext local_val;
+-    __atomic_load(&context, &local_val, __ATOMIC_ACQUIRE);
+-    if (local_val == NULL) {
++    if (context == NULL) {
+         if (!create) {
+             *ctx = NULL;
+             return 0;
+@@ -114,16 +112,13 @@ WEAK int halide_cuda_acquire_context(void *user_context, CUcontext *ctx, bool cr
+ 
+         {
+             ScopedSpinLock spinlock(&context_lock);
+-
+-            __atomic_load(&context, &local_val, __ATOMIC_ACQUIRE);
+-            if (local_val == NULL) {
++            if (context == NULL) {
+                 CUresult error = create_cuda_context(user_context, &local_val);
+                 if (error != CUDA_SUCCESS) {
+-                    __sync_lock_release(&context_lock);
+                     return error;
+                 }
++                context = local_val;
+             }
+-            __atomic_store(&context, &local_val, __ATOMIC_RELEASE);
+         }  // spinlock
+     }
+ 
+
+From abca24d3a5d557f6131f01989a7169711f7a0414 Mon Sep 17 00:00:00 2001
+From: Andrew Adams <andrew.b.adams@gmail.com>
+Date: Mon, 23 Apr 2018 14:46:38 -0700
+Subject: [PATCH 2/5] bug fix
+
+---
+ src/runtime/cuda.cpp | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/src/runtime/cuda.cpp b/src/runtime/cuda.cpp
+index db0aa648eac..ae83be5c40a 100644
+--- a/src/runtime/cuda.cpp
++++ b/src/runtime/cuda.cpp
+@@ -104,7 +104,8 @@ WEAK int halide_cuda_acquire_context(void *user_context, CUcontext *ctx, bool cr
+     // If the context has not been initialized, initialize it now.
+     halide_assert(user_context, &context != NULL);
+ 
+-    if (context == NULL) {
++    CUcontext local_val = context;
++    if (local_val == NULL) {
+         if (!create) {
+             *ctx = NULL;
+             return 0;
+@@ -112,13 +113,15 @@ WEAK int halide_cuda_acquire_context(void *user_context, CUcontext *ctx, bool cr
+ 
+         {
+             ScopedSpinLock spinlock(&context_lock);
+-            if (context == NULL) {
++            local_val = context;
++            if (local_val == NULL) {
++                CUcontext local_val;
+                 CUresult error = create_cuda_context(user_context, &local_val);
+                 if (error != CUDA_SUCCESS) {
+                     return error;
+                 }
+-                context = local_val;
+             }
++            context = local_val;
+         }  // spinlock
+     }
+ 
+
+From ab0e85caf04c9cc8c0f2e494b21d27a643ad6d2c Mon Sep 17 00:00:00 2001
+From: Andrew Adams <andrew.b.adams@gmail.com>
+Date: Mon, 23 Apr 2018 18:07:43 -0700
+Subject: [PATCH 3/5] Explanatory comment
+
+---
+ src/runtime/cuda.cpp | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/runtime/cuda.cpp b/src/runtime/cuda.cpp
+index ae83be5c40a..57fcae13b36 100644
+--- a/src/runtime/cuda.cpp
++++ b/src/runtime/cuda.cpp
+@@ -121,6 +121,12 @@ WEAK int halide_cuda_acquire_context(void *user_context, CUcontext *ctx, bool cr
+                     return error;
+                 }
+             }
++            // Normally in double-checked locking you need a release
++            // fence here that synchronizes with an acquire fence
++            // above to ensure context is fully constructed before
++            // assigning to the global, but there's no way that
++            // create_cuda_context can access the "context" global, so
++            // we should be OK just storing to it here.
+             context = local_val;
+         }  // spinlock
+     }
+
+From fc5e0ce9114c84cd02efda942467e338dc55d547 Mon Sep 17 00:00:00 2001
+From: Andrew Adams <andrew.b.adams@gmail.com>
+Date: Tue, 24 Apr 2018 11:34:56 -0700
+Subject: [PATCH 4/5] More comments
+
+---
+ src/runtime/HalideRuntime.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/runtime/HalideRuntime.h b/src/runtime/HalideRuntime.h
+index b00182b99dc..f3136b7335a 100644
+--- a/src/runtime/HalideRuntime.h
++++ b/src/runtime/HalideRuntime.h
+@@ -572,7 +572,9 @@ struct halide_device_interface_t {
+ /** Release all data associated with the given device interface, in
+  * particular all resources (memory, texture, context handles)
+  * allocated by Halide. Must be called explicitly when using AOT
+- * compilation. */
++ * compilation. This is *not* thread-safe with respect to actively
++ * running Halide code. Ensure all pipelines are finished before
++ * calling this. */
+ extern void halide_device_release(void *user_context,
+                                   const struct halide_device_interface_t *device_interface);
+ 
+
+From eca8adb73353ac9c39a126b7666d7b82c73baebe Mon Sep 17 00:00:00 2001
+From: Andrew Adams <andrew.b.adams@gmail.com>
+Date: Tue, 24 Apr 2018 13:10:17 -0700
+Subject: [PATCH 5/5] Add comment. Remove idiocy
+
+---
+ src/runtime/cuda.cpp | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/runtime/cuda.cpp b/src/runtime/cuda.cpp
+index 57fcae13b36..a919532bc93 100644
+--- a/src/runtime/cuda.cpp
++++ b/src/runtime/cuda.cpp
+@@ -104,6 +104,11 @@ WEAK int halide_cuda_acquire_context(void *user_context, CUcontext *ctx, bool cr
+     // If the context has not been initialized, initialize it now.
+     halide_assert(user_context, &context != NULL);
+ 
++    // Note that this null-check of the context is *not* locked with
++    // respect to device_release, so we may get a non-null context
++    // that's in the process of being destroyed. Things will go badly
++    // in general if you call device_release while other Halide code
++    // is running though.
+     CUcontext local_val = context;
+     if (local_val == NULL) {
+         if (!create) {
+@@ -115,7 +120,6 @@ WEAK int halide_cuda_acquire_context(void *user_context, CUcontext *ctx, bool cr
+             ScopedSpinLock spinlock(&context_lock);
+             local_val = context;
+             if (local_val == NULL) {
+-                CUcontext local_val;
+                 CUresult error = create_cuda_context(user_context, &local_val);
+                 if (error != CUDA_SUCCESS) {
+                     return error;
