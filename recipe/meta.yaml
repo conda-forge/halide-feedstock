@@ -12,9 +12,7 @@ source:
   url: https://github.com/halide/Halide/archive/release_{{ version.replace('.', '_') }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - ldflags.patch
-    - 2915.patch
-    - 2983.patch
+    - 4568.patch
 
 build:
   number: {{ build }}

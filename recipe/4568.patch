@@ -1,0 +1,61 @@
+From 5e32a98efd42f7a8c412af665e9320c1a72e690c Mon Sep 17 00:00:00 2001
+From: Min RK <benjaminrk@gmail.com>
+Date: Fri, 9 Mar 2018 02:30:41 +0100
+Subject: [PATCH 1/2] extend rather than clobbering ldflags
+
+---
+ python_bindings/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/python_bindings/Makefile b/python_bindings/Makefile
+index a45bbd8a99a9..7da8eb873123 100644
+--- a/python_bindings/Makefile
++++ b/python_bindings/Makefile
+@@ -62,7 +62,7 @@ CCFLAGS := $(filter-out -Wstrict-prototypes,$(CCFLAGS))
+ 
+ # DON'T link libpython* - leave those symbols to lazily resolve at load time
+ # Cf. https://github.com/pybind/pybind11/blob/master/docs/compiling.rst#building-manually
+-LDFLAGS=-lz $(USE_EXPORT_DYNAMIC)
++LDFLAGS += -lz $(USE_EXPORT_DYNAMIC)
+ 
+ PY_SRCS=$(shell ls $(ROOT_DIR)/src/*.cpp)
+ PY_OBJS=$(PY_SRCS:$(ROOT_DIR)/src/%.cpp=$(BIN)/src/%.o)
+
+From 88890dc1077cc07b16a3f9fe0331aa19701b1502 Mon Sep 17 00:00:00 2001
+From: Min RK <benjaminrk@gmail.com>
+Date: Thu, 30 Jan 2020 10:27:19 +0100
+Subject: [PATCH 2/2] respect standard $LDFLAGS, $CXXFLAGS environment
+ variables
+
+---
+ Makefile | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index bd0bdf357e79..d7c9b0f7094a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -18,12 +18,12 @@ UNAME = $(shell uname)
+ 
+ ifeq ($(OS), Windows_NT)
+     # assume we are building for the MinGW environment
+-    COMMON_LD_FLAGS=-luuid -lole32 -lpthread -lz -Wl,--stack,8388608
++    COMMON_LD_FLAGS=$(LDFLAGS) -luuid -lole32 -lpthread -lz -Wl,--stack,8388608
+     SHARED_EXT=dll
+     FPIC=
+ else
+     # let's assume "normal" UNIX such as linux
+-    COMMON_LD_FLAGS=-ldl -lpthread -lz
++    COMMON_LD_FLAGS=$(LDFLAGS) -ldl -lpthread -lz
+     FPIC=-fPIC
+ ifeq ($(UNAME), Darwin)
+     SHARED_EXT=dylib
+@@ -236,7 +236,7 @@ ifneq (,$(findstring clang,$(CXX_VERSION)))
+ LLVM_CXX_FLAGS_LIBCPP := $(findstring -stdlib=libc++, $(LLVM_CXX_FLAGS))
+ endif
+ 
+-CXX_FLAGS = $(CXX_WARNING_FLAGS) $(RTTI_CXX_FLAGS) -Woverloaded-virtual $(FPIC) $(OPTIMIZE) -fno-omit-frame-pointer -DCOMPILING_HALIDE
++CXX_FLAGS = $(CXXFLAGS) $(CXX_WARNING_FLAGS) $(RTTI_CXX_FLAGS) -Woverloaded-virtual $(FPIC) $(OPTIMIZE) -fno-omit-frame-pointer -DCOMPILING_HALIDE
+ 
+ CXX_FLAGS += $(LLVM_CXX_FLAGS)
+ CXX_FLAGS += $(PTX_CXX_FLAGS)
