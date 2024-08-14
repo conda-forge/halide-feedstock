@@ -32,6 +32,8 @@ requirements:
 test:
   requires:
     - {{ compiler('cxx') }}
+  files:
+    - test.cpp
 
 about:
   home: http://halide-lang.org
