@@ -27,7 +27,7 @@ requirements:
   host:
     - clangdev   18.*
     - llvmdev    18.*
-    - libllvm    18.*
+    - llvm       18.*
     - lld
     - libxml2
     - zlib
