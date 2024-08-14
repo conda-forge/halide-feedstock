@@ -8,7 +8,7 @@ mkdir -p build
 cd build
 
 cmake ${CMAKE_ARGS} \
-  -DHalide_SHARED_LIBS=YES \
+  -DHalide_SHARED_LLVM=YES \
   -DWITH_PYTHON_BINDINGS=NO \
   ..
 
