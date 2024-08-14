@@ -1,5 +1,6 @@
 {% set name = "halide" %}
 {% set version = "18.0.0" %}
+{% set major_ver = version.split(".")|int %}
 {% set sha256 = "1176b42a3e2374ab38555d9316c78e39b157044b5a8e765c748bf3afd2edb351" %}
 {% set build = 0 %}
 
@@ -14,6 +15,8 @@ source:
 build:
   number: {{ build }}
   skip: true  # [win]
+  run_exports:
+    - halide >=1!{{ version }},<1!{{ major_ver + 1 }}.0.0a0
 
 requirements:
   build:
