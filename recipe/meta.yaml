@@ -50,6 +50,7 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - {{ stdlib('c') }}
+        - cmake
       host:
         - python
         - pybind11
