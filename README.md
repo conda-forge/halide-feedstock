@@ -3,6 +3,10 @@ About halide-feedstock
 
 Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/halide-feedstock/blob/main/LICENSE.txt)
 
+
+About halide
+------------
+
 Home: http://halide-lang.org
 
 Package license: MIT
@@ -14,9 +18,19 @@ Development: https://github.com/halide/Halide
 Documentation: http://halide-lang.org/docs/
 
 Halide is a programming language designed to make it easier to write
-high-performance data parallel processing code on modern machines. Its current front end is embedded in
-C++. Compiler targets include x86/SSE, ARM v7/NEON, CUDA, Hexagon DSP, and OpenCL.
+high-performance data parallel processing code on modern machines.
+Its current front end is embedded in C++. Compiler targets include
+x86/SSE, ARM v7/NEON, CUDA, Hexagon DSP, and OpenCL.
 
+
+About halide-python
+-------------------
+
+
+
+Package license: 
+
+Summary: python bindings for halide programming language
 
 Current build status
 ====================
@@ -63,6 +77,7 @@ Current release info
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-halide-green.svg)](https://anaconda.org/conda-forge/halide) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/halide.svg)](https://anaconda.org/conda-forge/halide) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/halide.svg)](https://anaconda.org/conda-forge/halide) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/halide.svg)](https://anaconda.org/conda-forge/halide) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-halide--python-green.svg)](https://anaconda.org/conda-forge/halide-python) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/halide-python.svg)](https://anaconda.org/conda-forge/halide-python) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/halide-python.svg)](https://anaconda.org/conda-forge/halide-python) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/halide-python.svg)](https://anaconda.org/conda-forge/halide-python) |
 
 Installing halide
 =================
@@ -74,16 +89,16 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 ```
 
-Once the `conda-forge` channel has been enabled, `halide` can be installed with `conda`:
+Once the `conda-forge` channel has been enabled, `halide, halide-python` can be installed with `conda`:
 
 ```
-conda install halide
+conda install halide halide-python
 ```
 
 or with `mamba`:
 
 ```
-mamba install halide
+mamba install halide halide-python
 ```
 
 It is possible to list all of the versions of `halide` available on your platform with `conda`:
@@ -178,6 +193,7 @@ In order to produce a uniquely identifiable distribution:
 Feedstock Maintainers
 =====================
 
+* [@alexreinking](https://github.com/alexreinking/)
 * [@isuruf](https://github.com/isuruf/)
 * [@jrk](https://github.com/jrk/)
 * [@minrk](https://github.com/minrk/)
