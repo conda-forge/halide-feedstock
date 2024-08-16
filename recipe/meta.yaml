@@ -34,6 +34,13 @@ requirements:
     - libpng
     - libjpeg-turbo
 
+test:
+  requires:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  files:
+    - test.cpp
+
 outputs:
   - name: halide
 
@@ -42,6 +49,7 @@ outputs:
     requirements:
       build:
         - {{ compiler('cxx') }}
+        - {{ stdlib('c') }}
       host:
         - python
         - pybind11
@@ -62,13 +70,6 @@ outputs:
         - halide
     about:
       summary: 'python bindings for halide programming language'
-
-test:
-  requires:
-    - {{ compiler('cxx') }}
-    - {{ stdlib('c') }}
-  files:
-    - test.cpp
 
 about:
   home: http://halide-lang.org
