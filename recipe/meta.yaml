@@ -1,6 +1,6 @@
 {% set name = "halide" %}
-{% set version = "2019.08.27" %}
-{% set sha256 = "2883622a952f411a8c8a0da60bb6f1277923c62549928be53a28ce61d72e8353" %}
+{% set version = "18.0.0" %}
+{% set sha256 = "1176b42a3e2374ab38555d9316c78e39b157044b5a8e765c748bf3afd2edb351" %}
 {% set build = 0 %}
 
 package:
@@ -8,32 +8,37 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: https://github.com/halide/Halide/archive/release_{{ version.replace('.', '_') }}.tar.gz
+  url: https://github.com/halide/Halide/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - 4568.patch
-    - missing-intel-jit.patch  # [linux]
 
 build:
   number: {{ build }}
   skip: true  # [win]
+  run_exports:
+    - {{ pin_subpackage("halide") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake
+    - make
   host:
-    - clangdev
-    - llvmdev
+    - clangdev   18.*
+    - llvmdev    18.*
+    - llvm       18.*
+    - lld
     - libxml2
     - zlib
-  run:
-    - libxml2
-    - zlib
+    - libpng
+    - libjpeg-turbo
 
 test:
   requires:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  files:
+    - test.cpp
 
 about:
   home: http://halide-lang.org
@@ -54,3 +59,4 @@ extra:
     - jrk
     - minrk
     - steven-johnson
+    - isuruf
