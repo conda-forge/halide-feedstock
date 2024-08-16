@@ -51,6 +51,7 @@ outputs:
         - {{ compiler('cxx') }}
         - {{ stdlib('c') }}
         - cmake
+        - make
       host:
         - python
         - pybind11
