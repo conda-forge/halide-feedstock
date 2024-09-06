@@ -1,7 +1,7 @@
 {% set name = "halide" %}
 {% set version = "18.0.0" %}
 {% set sha256 = "1176b42a3e2374ab38555d9316c78e39b157044b5a8e765c748bf3afd2edb351" %}
-{% set build = 1 %}
+{% set build = 2 %}
 {% set llvm_version = 18 %}
 
 package:
