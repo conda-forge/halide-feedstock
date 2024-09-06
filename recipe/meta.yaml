@@ -57,6 +57,7 @@ outputs:
         - pybind11
         - scikit-build
         - pip
+        - setuptools
         - {{ pin_subpackage("halide", exact=True) }}
         - clangdev   {{ llvm_version }}.*
         - llvmdev    {{ llvm_version }}.*
