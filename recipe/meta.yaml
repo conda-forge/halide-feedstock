@@ -69,6 +69,7 @@ outputs:
         - halide
       commands:
         - pip check
+        - test -f $PREFIX/lib/libHalidePyStubs.a
     about:
       summary: 'python bindings for halide programming language'
 
