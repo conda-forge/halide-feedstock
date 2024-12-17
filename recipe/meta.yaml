@@ -56,6 +56,7 @@ outputs:
         - python
         - pybind11
         - scikit-build-core
+        - setuptools_scm
         - pip
         - {{ pin_subpackage("halide", exact=True) }}
         - clangdev   {{ llvm_version }}.*
