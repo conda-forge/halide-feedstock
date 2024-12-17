@@ -66,10 +66,13 @@ outputs:
       run:
         - {{ pin_subpackage("halide", exact=True) }}
         - python
+        - imageio
         - numpy
     test:
       imports:
         - halide
+      commands:
+        - pip check
     about:
       summary: 'python bindings for halide programming language'
 
