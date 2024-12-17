@@ -55,9 +55,8 @@ outputs:
       host:
         - python
         - pybind11
-        - scikit-build
+        - scikit-build-core
         - pip
-        - setuptools
         - {{ pin_subpackage("halide", exact=True) }}
         - clangdev   {{ llvm_version }}.*
         - llvmdev    {{ llvm_version }}.*
