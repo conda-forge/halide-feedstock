@@ -59,11 +59,6 @@ outputs:
         - setuptools_scm
         - pip
         - {{ pin_subpackage("halide", exact=True) }}
-        - clangdev   {{ llvm_version }}.*
-        - llvmdev    {{ llvm_version }}.*
-        - llvm       {{ llvm_version }}.*
-        - lld        {{ llvm_version }}.*
-        - zlib
       run:
         - {{ pin_subpackage("halide", exact=True) }}
         - python
