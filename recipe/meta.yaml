@@ -29,10 +29,6 @@ requirements:
     - llvmdev    {{ llvm_version }}.*
     - llvm       {{ llvm_version }}.*
     - lld        {{ llvm_version }}.*
-    - libxml2
-    - zlib
-    - libpng
-    - libjpeg-turbo
 
 test:
   requires:
