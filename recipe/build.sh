@@ -8,8 +8,10 @@ mkdir -p build
 cd build
 
 cmake ${CMAKE_ARGS} \
-  -DHalide_SHARED_LLVM=YES \
+  -DHalide_LLVM_SHARED_LIBS=YES \
   -DWITH_PYTHON_BINDINGS=NO \
+  -DWITH_TESTS=NO \
+  -DWITH_TUTORIALS=NO \
   ..
 
 make -j${CPU_COUNT}

@@ -1,8 +1,8 @@
 {% set name = "halide" %}
-{% set version = "18.0.0" %}
-{% set sha256 = "1176b42a3e2374ab38555d9316c78e39b157044b5a8e765c748bf3afd2edb351" %}
-{% set build = 2 %}
-{% set llvm_version = 18 %}
+{% set version = "19.0.0" %}
+{% set sha256 = "83bae1f0e24dc44d9d85014d5cd0474df2dd03975680894ce3fafd6e97dffee2" %}
+{% set build = 0 %}
+{% set llvm_version = 19 %}
 
 package:
   name: {{ name }}
@@ -29,10 +29,6 @@ requirements:
     - llvmdev    {{ llvm_version }}.*
     - llvm       {{ llvm_version }}.*
     - lld        {{ llvm_version }}.*
-    - libxml2
-    - zlib
-    - libpng
-    - libjpeg-turbo
 
 test:
   requires:
@@ -55,22 +51,23 @@ outputs:
       host:
         - python
         - pybind11
-        - scikit-build
+        - scikit-build-core
+        - setuptools_scm
         - pip
-        - setuptools
         - {{ pin_subpackage("halide", exact=True) }}
-        - clangdev   {{ llvm_version }}.*
-        - llvmdev    {{ llvm_version }}.*
-        - llvm       {{ llvm_version }}.*
-        - lld        {{ llvm_version }}.*
-        - zlib
       run:
         - {{ pin_subpackage("halide", exact=True) }}
         - python
+        - imageio
         - numpy
     test:
+      requires:
+        - pip
       imports:
         - halide
+      commands:
+        - pip check
+        - test -f $PREFIX/lib/libHalidePyStubs.a
     about:
       summary: 'python bindings for halide programming language'
 
