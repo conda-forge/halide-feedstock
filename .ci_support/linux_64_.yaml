@@ -30,7 +30,3 @@ python:
 - 3.15.* *_cp315
 target_platform:
 - linux-64
-
-CI:
-- 1
-
