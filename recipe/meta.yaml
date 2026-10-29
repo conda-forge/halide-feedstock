@@ -1,6 +1,6 @@
 {% set name = "halide" %}
-{% set version = "22.0.0.post2" %}
-{% set sha256 = "bcc343b028a3f966635db254e46257c44943c3cf0c788f2a0c6c429000be8509" %}
+{% set version = "22.0.0.post3" %}
+{% set sha256 = "de3e1a168de2a326eb9739e59fb2305fab58cb55085c8f11b2764adc0e1463d2" %}
 {% set build = 0 %}
 {% set llvm_version = 22 %}
 
