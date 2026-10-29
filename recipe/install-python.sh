@@ -1,12 +1,20 @@
 #!/bin/bash
 set -xeuo pipefail
 
-export CMAKE_PREFIX_PATH=$PREFIX
+# Build only the Python bindings, against the libHalide in $PREFIX.
+# Every Python variant shares this work directory, so start fresh.
+rm -rf build-python
+cmake ${CMAKE_ARGS} \
+  -S python_bindings \
+  -B build-python \
+  -DPython_EXECUTABLE="${PYTHON}" \
+  -DHalide_INSTALL_PYTHONDIR="${SP_DIR#"${PREFIX}/"}/halide" \
+  -DWITH_PYTHON_STUBS=NO \
+  -DWITH_TESTS=NO \
+  -DWITH_TUTORIALS=NO
 
-# only build the Python bindings, not libHalide again
-$PYTHON -m pip install . -vv --no-deps -C cmake.source-dir=python_bindings
+cmake --build build-python -j"${CPU_COUNT}"
 
-# fix installation of lib files inside Python package to $PREFIX/lib
-mv -v $SP_DIR/halide/lib/lib* $PREFIX/lib/
-mv -v $SP_DIR/halide/lib/cmake/* $PREFIX/lib/cmake/
-rm -rvf $SP_DIR/halide/lib
+for component in Halide_Python Halide_PythonRuntime Halide_PythonBin; do
+  cmake --install build-python --component "${component}"
+done

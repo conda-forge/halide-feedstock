@@ -1,26 +1,28 @@
-// copied from test/internal.cpp
+#include "Halide.h"
 
-#include <Halide.h>
+#include <cstdio>
+
 using namespace Halide;
-using namespace Halide::Internal;
 
-int main(int argc, const char **argv) {
-    IRPrinter::test();
-    CodeGen_C::test();
-    ir_equality_test();
-    bounds_test();
-    expr_match_test();
-    deinterleave_vector_test();
-    modulus_remainder_test();
-    cse_test();
-    solve_test();
-    target_test();
-    cplusplus_mangle_test();
-    is_monotonic_test();
-    split_predicate_test();
-    associativity_test();
-    generator_test();
-    propagate_estimate_test();
+int main() {
+    Var x("x"), y("y");
+    Func f("f");
+    f(x, y) = x + y * 2;
 
+    // JIT compile and run.
+    Buffer<int> out = f.realize({8, 8});
+    for (int j = 0; j < out.height(); j++) {
+        for (int i = 0; i < out.width(); i++) {
+            if (out(i, j) != i + j * 2) {
+                std::printf("Mismatch at (%d, %d): %d\n", i, j, out(i, j));
+                return 1;
+            }
+        }
+    }
+
+    // Exercise the LLVM backend's ahead-of-time path as well.
+    f.compile_to_static_library("f_aot", {}, "f_aot", get_host_target());
+
+    std::printf("Success!\n");
     return 0;
 }
